@@ -3,6 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/RaboAssignment.iml" filepath="$PROJECT_DIR$/.idea/RaboAssignment.iml" />
+      <module fileurl="file://$PROJECT_DIR$/api/rabobank-assignment-api.iml" filepath="$PROJECT_DIR$/api/rabobank-assignment-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/data/rabobank-assignment-data.iml" filepath="$PROJECT_DIR$/data/rabobank-assignment-data.iml" />
+      <module fileurl="file://$PROJECT_DIR$/domain/rabobank-assignment-domain.iml" filepath="$PROJECT_DIR$/domain/rabobank-assignment-domain.iml" />
     </modules>
   </component>
 </project>

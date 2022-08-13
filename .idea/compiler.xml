@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="rabobank-assignment-data" />
+        <module name="rabobank-assignment-api" />
+        <module name="rabobank-assignment-domain" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="RaboAssignment" target="11" />
+      <module name="rabobank-assignment-api" target="11" />
+      <module name="rabobank-assignment-data" target="11" />
+      <module name="rabobank-assignment-domain" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

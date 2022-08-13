@@ -1,0 +1,6 @@
+nl\rabobank\authorizations\PowerOfAttorney$PowerOfAttorneyBuilder.class
+nl\rabobank\authorizations\PowerOfAttorney.class
+nl\rabobank\authorizations\Authorization.class
+nl\rabobank\account\PaymentAccount.class
+nl\rabobank\account\Account.class
+nl\rabobank\account\SavingsAccount.class

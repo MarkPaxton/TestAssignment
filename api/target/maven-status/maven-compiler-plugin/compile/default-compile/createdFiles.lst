@@ -1,0 +1,6 @@
+nl\rabobank\security\SecurityConfiguration.class
+nl\rabobank\controllers\ApiController.class
+nl\rabobank\RaboAssignmentApplication.class
+nl\rabobank\services\AccountAccessService.class
+nl\rabobank\SwaggerConfiguration.class
+nl\rabobank\WebConfig.class

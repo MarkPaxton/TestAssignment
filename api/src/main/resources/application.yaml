@@ -1,0 +1,15 @@
+spring:
+  main:
+    banner-mode: off
+  mongodb:
+    embedded:
+      version: "3.5.5"
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:8080/public/jwks
+springfox:
+  documentation:
+    swagger-ui:
+      base-url: "/docs"
