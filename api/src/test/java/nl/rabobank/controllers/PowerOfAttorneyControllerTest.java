@@ -3,7 +3,6 @@ package nl.rabobank.controllers;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import nl.rabobank.account.Account;
 import nl.rabobank.authorizations.Authorization;
 import nl.rabobank.dto.PowerOfAttorneyAuthorizationDto;
-import nl.rabobank.exceptions.AccountHolderException;
 import nl.rabobank.exceptions.NoAccountException;
 import nl.rabobank.services.PowerOfAttorneyService;
 import reactor.core.publisher.Flux;
@@ -110,11 +108,12 @@ class PowerOfAttorneyControllerTest {
     }
 
     @Test
-    void setAuthorization_AccountHolderException() {
-        when(powerOfAttorneyService.setAuthorization(eq("sub"), anyString(), anyString(), any(Authorization.class))).thenReturn(Mono.error(new AccountHolderException()));
+    void setAuthorization_NoAccount_Exception() {
+        when(powerOfAttorneyService.setAuthorization(eq("sub"), anyString(), anyString(), any(Authorization.class))).thenReturn(
+                        Mono.error(new NoAccountException()));
         webTestClientWithSubject("sub")
                         .post().uri("/powerofattorney")
-                     //   .contentType(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
                         .body(BodyInserters.fromValue(new PowerOfAttorneyAuthorizationDto("testAccNumber", "testOtherUser", Authorization.READ)))
                         .exchange()
                         .expectStatus().isBadRequest();
@@ -122,20 +121,9 @@ class PowerOfAttorneyControllerTest {
     }
 
     @Test
-    void setAuthorization_NoAccountException() {
-        when(powerOfAttorneyService.setAuthorization(eq("sub"), anyString(), anyString(), any(Authorization.class))).thenReturn(Mono.error(new NoAccountException()));
-        webTestClientWithSubject("sub")
-                        .post().uri("/powerofattorney")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(new PowerOfAttorneyAuthorizationDto("testAccNumber", "testOtherUser", Authorization.READ)))
-                        .exchange()
-                        .expectStatus().isNotFound();
-        verify(powerOfAttorneyService, times(1)).setAuthorization("sub", "testAccNumber", "testOtherUser", Authorization.READ);
-    }
-
-    @Test
     void setAuthorization_OtherException() {
-        when(powerOfAttorneyService.setAuthorization(eq("sub"), anyString(), anyString(), any(Authorization.class))).thenReturn(Mono.error(new RuntimeException()));
+        when(powerOfAttorneyService.setAuthorization(eq("sub"), anyString(), anyString(), any(Authorization.class))).thenReturn(
+                        Mono.error(new RuntimeException()));
         webTestClientWithSubject("sub")
                         .post().uri("/powerofattorney")
                         .contentType(MediaType.APPLICATION_JSON)

@@ -16,7 +16,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import lombok.extern.slf4j.Slf4j;
 import nl.rabobank.dto.AccountListDTO;
 import nl.rabobank.dto.PowerOfAttorneyAuthorizationDto;
-import nl.rabobank.exceptions.AccountHolderException;
 import nl.rabobank.exceptions.NoAccountException;
 import nl.rabobank.services.PowerOfAttorneyService;
 import reactor.core.publisher.Flux;
@@ -49,10 +48,8 @@ public class PowerOfAttorneyController {
             log.debug("setPowerOfAttorney user# {} to user# {} permission {}", jwt.getSubject().hashCode(), auth.getGrantTo().hashCode(),
                             auth.getAuthorization());
             return powerOfAttorneyService.setAuthorization(jwt.getSubject(), auth.getAccountNumber(), auth.getGrantTo(), auth.getAuthorization())
-                                         .onErrorMap(AccountHolderException.class::isInstance,
-                                                         e -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account holder error", e))
                                          .onErrorMap(NoAccountException.class::isInstance,
-                                                         e -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Account not found", e))
+                                                         e -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Account not found", e))
                                          .onErrorMap(e -> !(e instanceof ResponseStatusException),
                                                          e -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown exception", e))
                                          .log()
