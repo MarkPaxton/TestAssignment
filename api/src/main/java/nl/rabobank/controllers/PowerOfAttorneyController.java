@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,9 +15,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import io.swagger.annotations.ApiImplicitParam;
 import lombok.extern.slf4j.Slf4j;
+import nl.rabobank.account.Account;
 import nl.rabobank.dto.AccountListDTO;
 import nl.rabobank.dto.PowerOfAttorneyAuthorizationDto;
 import nl.rabobank.exceptions.NoAccountException;
+import nl.rabobank.services.DebugAccountService;
 import nl.rabobank.services.PowerOfAttorneyService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -27,9 +30,11 @@ import springfox.documentation.annotations.ApiIgnore;
 @Slf4j
 public class PowerOfAttorneyController {
     private final PowerOfAttorneyService powerOfAttorneyService;
+    private final DebugAccountService debugAccountService;
 
-    public PowerOfAttorneyController(PowerOfAttorneyService powerOfAttorneyService) {
+    public PowerOfAttorneyController(PowerOfAttorneyService powerOfAttorneyService, DebugAccountService debugAccountService) {
         this.powerOfAttorneyService = powerOfAttorneyService;
+        this.debugAccountService = debugAccountService;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -56,4 +61,10 @@ public class PowerOfAttorneyController {
                                          .map(r -> ResponseEntity.status(HttpStatus.CREATED).build());
         });
     }
+    @PostMapping("/account")
+    @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer {access_token}")
+    public Mono<Account> createAccount(@ApiIgnore @AuthenticationPrincipal Jwt jwt, @PathVariable String accountHolderName, @PathVariable String accountNumber, @PathVariable String accountType ) {
+        return debugAccountService.createAccount(accountHolderName, accountNumber, accountType);
+    }
+
 }

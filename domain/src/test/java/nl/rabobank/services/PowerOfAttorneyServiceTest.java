@@ -8,10 +8,11 @@ import org.junit.jupiter.api.Test;
 
 import nl.rabobank.authorizations.Authorization;
 import nl.rabobank.authorizations.PowerOfAttorney;
+import nl.rabobank.authorizations.PowerOfAttorneyImpl;
 import nl.rabobank.exceptions.NoAccountException;
 import nl.rabobank.models.TestAccount;
 import nl.rabobank.repositories.AccountRepository;
-import nl.rabobank.repositories.PowerOfAttorneyAuthorisationRepository;
+import nl.rabobank.repositories.PowerOfAttorneyRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -31,7 +32,7 @@ class PowerOfAttorneyServiceTest {
 
     AccountRepository accountRepository;
 
-    PowerOfAttorneyAuthorisationRepository powerOfAttorneyAuthorisationRepository;
+    PowerOfAttorneyRepository powerOfAttorneyAuthorisationRepository;
 
     Map<String, TestAccount> testAccounts = Map.of("1", new TestAccount(),
                     "2", new TestAccount(),
@@ -40,27 +41,27 @@ class PowerOfAttorneyServiceTest {
                     "5", new TestAccount());
 
     List<PowerOfAttorney> testPowers = List.of(
-                    PowerOfAttorney.builder().granteeName("grant").grantorName(testAccounts.get("1").getAccountHolderName())
-                                   .account(testAccounts.get("1"))
-                                   .authorization(Authorization.READ).build(),
-                    PowerOfAttorney.builder().granteeName("grant").grantorName(testAccounts.get("2").getAccountHolderName())
-                                   .account(testAccounts.get("2"))
-                                   .authorization(Authorization.WRITE).build(),
-                    PowerOfAttorney.builder().granteeName("grant").grantorName(testAccounts.get("3").getAccountHolderName())
-                                   .account(testAccounts.get("3"))
-                                   .authorization(Authorization.READ).build(),
-                    PowerOfAttorney.builder().granteeName("grant").grantorName(testAccounts.get("4").getAccountHolderName())
-                                   .account(testAccounts.get("4"))
-                                   .authorization(Authorization.WRITE).build(),
-                    PowerOfAttorney.builder().granteeName("grant").grantorName(testAccounts.get("5").getAccountHolderName())
-                                   .account(testAccounts.get("5"))
-                                   .authorization(Authorization.WRITE).build()
+                    PowerOfAttorneyImpl.builder().granteeName("grant").grantorName(testAccounts.get("1").getAccountHolderName())
+                                       .account(testAccounts.get("1"))
+                                       .authorization(Authorization.READ).build(),
+                    PowerOfAttorneyImpl.builder().granteeName("grant").grantorName(testAccounts.get("2").getAccountHolderName())
+                                       .account(testAccounts.get("2"))
+                                       .authorization(Authorization.WRITE).build(),
+                    PowerOfAttorneyImpl.builder().granteeName("grant").grantorName(testAccounts.get("3").getAccountHolderName())
+                                       .account(testAccounts.get("3"))
+                                       .authorization(Authorization.READ).build(),
+                    PowerOfAttorneyImpl.builder().granteeName("grant").grantorName(testAccounts.get("4").getAccountHolderName())
+                                       .account(testAccounts.get("4"))
+                                       .authorization(Authorization.WRITE).build(),
+                    PowerOfAttorneyImpl.builder().granteeName("grant").grantorName(testAccounts.get("5").getAccountHolderName())
+                                       .account(testAccounts.get("5"))
+                                       .authorization(Authorization.WRITE).build()
     );
 
     @BeforeEach
     void beforeEach() {
         accountRepository = mock(AccountRepository.class);
-        powerOfAttorneyAuthorisationRepository = mock(PowerOfAttorneyAuthorisationRepository.class);
+        powerOfAttorneyAuthorisationRepository = mock(PowerOfAttorneyRepository.class);
     }
 
     /**
@@ -68,7 +69,7 @@ class PowerOfAttorneyServiceTest {
      */
     @Test
     void getAllAccountsForAccountHolder_Empty() {
-        doReturn(Flux.empty()).when(powerOfAttorneyAuthorisationRepository).getAllByGrantee("testUser");
+        doReturn(Flux.empty()).when(powerOfAttorneyAuthorisationRepository).findAllByGranteeName("testUser");
         var powerOfAttorneyService = new TestPowerOfAttorneyService(accountRepository, powerOfAttorneyAuthorisationRepository);
 
         var results = powerOfAttorneyService.getAllAccounts("testUser");
@@ -77,7 +78,7 @@ class PowerOfAttorneyServiceTest {
                     .expectSubscription().expectNextCount(0)
                     .expectComplete().verify();
 
-        verify(powerOfAttorneyAuthorisationRepository, times(1)).getAllByGrantee("testUser");
+        verify(powerOfAttorneyAuthorisationRepository, times(1)).findAllByGranteeName("testUser");
 
     }
 
@@ -86,7 +87,7 @@ class PowerOfAttorneyServiceTest {
      */
     @Test
     void getAllAccountsForAccountHolder_WithData() {
-        doReturn(Flux.fromIterable(testPowers)).when(powerOfAttorneyAuthorisationRepository).getAllByGrantee("testUser");
+        doReturn(Flux.fromIterable(testPowers)).when(powerOfAttorneyAuthorisationRepository).findAllByGranteeName("testUser");
         var powerOfAttorneyService = new TestPowerOfAttorneyService(accountRepository, powerOfAttorneyAuthorisationRepository);
 
         var results = powerOfAttorneyService.getAllAccounts("testUser");
@@ -94,7 +95,7 @@ class PowerOfAttorneyServiceTest {
                     .expectNextCount(5)
                     .expectComplete()
                     .verify();
-        verify(powerOfAttorneyAuthorisationRepository, times(1)).getAllByGrantee("testUser");
+        verify(powerOfAttorneyAuthorisationRepository, times(1)).findAllByGranteeName("testUser");
 
     }
 
@@ -103,8 +104,8 @@ class PowerOfAttorneyServiceTest {
      */
     @Test
     void setAuthorization_With_No_Matching_Account() {
-        doReturn(Mono.empty()).when(powerOfAttorneyAuthorisationRepository).getByGranteeNameAndAccountNumber("ruby", "1");
-        doReturn(Mono.empty()).when(accountRepository).getByAccountHolderAndAccountNumber("jane", "1");
+        doReturn(Mono.empty()).when(powerOfAttorneyAuthorisationRepository).findAllByGranteeNameAndAccountNumber("ruby", "1");
+        doReturn(Mono.empty()).when(accountRepository).findAllByAccountHolderNameAndAccountNumber("jane", "1");
 
         var powerOfAttorneyService = new TestPowerOfAttorneyService(accountRepository, powerOfAttorneyAuthorisationRepository);
 
@@ -112,8 +113,8 @@ class PowerOfAttorneyServiceTest {
         StepVerifier.create(results)
                     .expectError(NoAccountException.class)
                     .verify();
-        verify(powerOfAttorneyAuthorisationRepository, times(1)).getByGranteeNameAndAccountNumber("ruby", "1");
-        verify(accountRepository, times(1)).getByAccountHolderAndAccountNumber("jane", "1");
+        verify(powerOfAttorneyAuthorisationRepository, times(1)).findAllByGranteeNameAndAccountNumber("ruby", "1");
+        verify(accountRepository, times(1)).findAllByAccountHolderNameAndAccountNumber("jane", "1");
     }
 
     /**
@@ -124,7 +125,7 @@ class PowerOfAttorneyServiceTest {
         var testExistingPower = testPowers.get(0);
         var testAccount = testExistingPower.getAccount();
         doReturn(Mono.just(testExistingPower)).when(powerOfAttorneyAuthorisationRepository)
-                                              .getByGranteeNameAndAccountNumber(testExistingPower.getGranteeName(), testAccount.getAccountNumber());
+                                              .findAllByGranteeNameAndAccountNumber(testExistingPower.getGranteeName(), testAccount.getAccountNumber());
 
         var powerOfAttorneyService = new TestPowerOfAttorneyService(accountRepository, powerOfAttorneyAuthorisationRepository);
 
@@ -134,10 +135,10 @@ class PowerOfAttorneyServiceTest {
         StepVerifier.create(results)
                     .expectNextMatches(granted -> granted.equals(testExistingPower))
                     .expectComplete().verify();
-        verify(powerOfAttorneyAuthorisationRepository, times(1)).getByGranteeNameAndAccountNumber(testExistingPower.getGranteeName(),
+        verify(powerOfAttorneyAuthorisationRepository, times(1)).findAllByGranteeNameAndAccountNumber(testExistingPower.getGranteeName(),
                         testAccount.getAccountNumber());
-        verify(accountRepository, never()).getByAccountHolderAndAccountNumber(anyString(), anyString());
-        verify(powerOfAttorneyAuthorisationRepository, never()).save(any(PowerOfAttorney.class));
+        verify(accountRepository, never()).findAllByAccountHolderNameAndAccountNumber(anyString(), anyString());
+        verify(powerOfAttorneyAuthorisationRepository, never()).save(any(PowerOfAttorneyImpl.class));
     }
 
     /**
@@ -147,10 +148,10 @@ class PowerOfAttorneyServiceTest {
     void setAuthorization_With_Correct_Account_New_Grant() {
         var testAccount = testAccounts.get("1");
         doReturn(Mono.empty()).when(powerOfAttorneyAuthorisationRepository)
-                              .getByGranteeNameAndAccountNumber("jane", testAccount.getAccountNumber());
+                              .findAllByGranteeNameAndAccountNumber("jane", testAccount.getAccountNumber());
         doReturn(Mono.just(testAccount)).when(accountRepository)
-                                        .getByAccountHolderAndAccountNumber(testAccount.getAccountHolderName(), testAccount.getAccountNumber());
-        doAnswer(a -> Mono.just(a.getArgument(0))).when(powerOfAttorneyAuthorisationRepository).save(any(PowerOfAttorney.class));
+                                        .findAllByAccountHolderNameAndAccountNumber(testAccount.getAccountHolderName(), testAccount.getAccountNumber());
+        doAnswer(a -> Mono.just(a.getArgument(0))).when(powerOfAttorneyAuthorisationRepository).save(any(PowerOfAttorneyImpl.class));
 
         var powerOfAttorneyService = new TestPowerOfAttorneyService(accountRepository, powerOfAttorneyAuthorisationRepository);
         var results = powerOfAttorneyService.setAuthorization(testAccount.getAccountHolderName(), testAccount.getAccountNumber(), "jane",
@@ -164,8 +165,8 @@ class PowerOfAttorneyServiceTest {
                                                     granted.getGranteeName().equals("jane") &&
                                                     granted.getGrantorName().equals(testAccount.getAccountHolderName()))
                     .expectComplete().verify();
-        verify(powerOfAttorneyAuthorisationRepository, times(1)).getByGranteeNameAndAccountNumber("jane", testAccount.getAccountNumber());
-        verify(accountRepository, times(1)).getByAccountHolderAndAccountNumber(testAccount.getAccountHolderName(), testAccount.getAccountNumber());
+        verify(powerOfAttorneyAuthorisationRepository, times(1)).findAllByGranteeNameAndAccountNumber("jane", testAccount.getAccountNumber());
+        verify(accountRepository, times(1)).findAllByAccountHolderNameAndAccountNumber(testAccount.getAccountHolderName(), testAccount.getAccountNumber());
         verify(powerOfAttorneyAuthorisationRepository, times(1)).save(argThat(power ->
                         power.getAuthorization() == Authorization.WRITE &&
                                         power.getGrantorName().equals(testAccount.getAccountHolderName()) &&
@@ -177,15 +178,15 @@ class PowerOfAttorneyServiceTest {
      * Test that if a different PoA Authorization already exists, create a new one to replace it
      */
     @Test
-    void setAuthorization_With_Correct_Account_Repalce_Existing_Grant() {
+    void setAuthorization_With_Correct_Account_Replace_Existing_Grant() {
         var testExistingPower = testPowers.get(0);
         var testAccount = testExistingPower.getAccount();
         doReturn(Mono.just(testExistingPower)).when(powerOfAttorneyAuthorisationRepository)
-                                              .getByGranteeNameAndAccountNumber(testExistingPower.getGranteeName(), testAccount.getAccountNumber());
+                                              .findAllByGranteeNameAndAccountNumber(testExistingPower.getGranteeName(), testAccount.getAccountNumber());
         doReturn(Mono.just(testAccount)).when(accountRepository)
-                                        .getByAccountHolderAndAccountNumber(eq(testAccount.getAccountHolderName()),
+                                        .findAllByAccountHolderNameAndAccountNumber(eq(testAccount.getAccountHolderName()),
                                                         eq(testAccount.getAccountNumber()));
-        doAnswer(a -> Mono.just(a.getArgument(0))).when(powerOfAttorneyAuthorisationRepository).save(any(PowerOfAttorney.class));
+        doAnswer(a -> Mono.just(a.getArgument(0))).when(powerOfAttorneyAuthorisationRepository).save(any(PowerOfAttorneyImpl.class));
 
         var powerOfAttorneyService = new TestPowerOfAttorneyService(accountRepository, powerOfAttorneyAuthorisationRepository);
 
@@ -198,9 +199,9 @@ class PowerOfAttorneyServiceTest {
                                     testExistingPower.getAccount().getAccountNumber().equals(granted.getAccount().getAccountNumber()) &&
                                     granted.getAuthorization() == Authorization.NONE)
                     .expectComplete().verify();
-        verify(powerOfAttorneyAuthorisationRepository, times(1)).getByGranteeNameAndAccountNumber(testExistingPower.getGranteeName(),
+        verify(powerOfAttorneyAuthorisationRepository, times(1)).findAllByGranteeNameAndAccountNumber(testExistingPower.getGranteeName(),
                         testAccount.getAccountNumber());
-        verify(accountRepository, times(1)).getByAccountHolderAndAccountNumber(anyString(), anyString());
+        verify(accountRepository, times(1)).findAllByAccountHolderNameAndAccountNumber(anyString(), anyString());
         verify(powerOfAttorneyAuthorisationRepository, times(1)).save(argThat(power ->
                         power.getAuthorization() == Authorization.NONE &&
                                         power.getGrantorName().equals(testExistingPower.getGrantorName()) &&

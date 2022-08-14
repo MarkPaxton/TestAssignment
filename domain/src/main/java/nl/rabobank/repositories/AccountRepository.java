@@ -5,10 +5,10 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public interface AccountRepository {
-    Flux<Account> getAllAccountsByAccountHolder(String accountHolder);
+    Flux<Account> findAllByAccountHolderName(String accountHolder);
 
-    Mono<Account> createAccount(Account account);
-    Mono<Account> getAccountByAccountNumber(String accountNumber);
+    Mono<Account> save(Account account);
+    Mono<Account> findByAccountNumber(String accountNumber);
 
-    Mono<Account> getByAccountHolderAndAccountNumber(String accountHolder, String accountNumber);
+    Mono<Account> findAllByAccountHolderNameAndAccountNumber(String accountHolder, String accountNumber);
 }

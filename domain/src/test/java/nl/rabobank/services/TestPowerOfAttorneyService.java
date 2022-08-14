@@ -2,18 +2,18 @@ package nl.rabobank.services;
 
 import lombok.AllArgsConstructor;
 import nl.rabobank.repositories.AccountRepository;
-import nl.rabobank.repositories.PowerOfAttorneyAuthorisationRepository;
+import nl.rabobank.repositories.PowerOfAttorneyRepository;
 
 @AllArgsConstructor
 public class TestPowerOfAttorneyService  extends AbstractPowerOfAttorneyService {
     AccountRepository accountRepository;
-    PowerOfAttorneyAuthorisationRepository powerOfAttorneyAuthorisationRepository;
+    PowerOfAttorneyRepository powerOfAttorneyAuthorisationRepository;
 
     @Override protected AccountRepository getAccountRepository() {
         return accountRepository;
     }
 
-    @Override protected PowerOfAttorneyAuthorisationRepository getPowerOfAttorneyAuthorisationRepository() {
+    @Override protected PowerOfAttorneyRepository getPowerOfAttorneyAuthorisationRepository() {
         return powerOfAttorneyAuthorisationRepository;
     }
 }
