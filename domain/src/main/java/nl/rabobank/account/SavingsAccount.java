@@ -8,4 +8,5 @@ public class SavingsAccount implements Account
     String accountNumber;
     String accountHolderName;
     Double balance;
+    Double withdrawalQuota;
 }

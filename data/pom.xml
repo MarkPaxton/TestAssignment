@@ -11,7 +11,11 @@
 
     <dependencies>
         <!-- Add your dependencies here! -->
-
+        <dependency>
+            <groupId>nl.rabobank</groupId>
+            <artifactId>rabobank-assignment-data</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Mongo -->
         <dependency>
@@ -21,6 +25,22 @@
         <dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-reactivestreams</artifactId>
+            <version>4.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>nl.rabobank</groupId>
+            <artifactId>rabobank-assignment-domain</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+            <version>3.4.21</version>
         </dependency>
     </dependencies>
 

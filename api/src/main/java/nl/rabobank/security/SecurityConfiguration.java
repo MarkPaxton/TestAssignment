@@ -15,8 +15,9 @@ public class SecurityConfiguration {
     @Bean
     SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
+                        .csrf().disable()
                         .authorizeExchange((authorize) -> authorize
-                                        .pathMatchers("/access/**").authenticated()
+                                        .pathMatchers("/powerofattorney/**").authenticated()
                                         .pathMatchers("/**").permitAll()
                         )
                         .oauth2ResourceServer((resourceServer) -> resourceServer
