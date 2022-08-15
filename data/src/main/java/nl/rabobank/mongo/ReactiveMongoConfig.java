@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 @EnableConfigurationProperties(MongoProperties.class)
 @RequiredArgsConstructor
 @EnableReactiveMongoAuditing
-@EnableReactiveMongoRepositories
 public class ReactiveMongoConfig {
     private final MongoProperties mongoProperties;
 

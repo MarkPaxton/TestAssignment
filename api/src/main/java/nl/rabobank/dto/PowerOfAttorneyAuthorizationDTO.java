@@ -8,6 +8,8 @@ import nl.rabobank.authorizations.Authorization;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class PowerOfAttorneyAuthorizationDTO {
     String accountNumber;
     String grantTo;

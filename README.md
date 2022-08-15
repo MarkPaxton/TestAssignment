@@ -1,22 +1,5 @@
 ## Rabobank Assignment for Authorizations Area
 
-This project contains several premade modules for you to implement your code. We hope this helps you with ´what to put
-where´.
-
-### API
-
-This module is where you have to implement the API interface and connect the other two modules
-
-### Data
-
-This module is where you implement all stateful Mongo data. We have provided an embedded Mongo configuration for you.
-You just need to design the data you need to store and the repositories to store or retrieve it with.
-
-### Domain
-
-This module represents the domain you will be working with. The domain module presents classes for the power of attorney
-model that contains a Read or Write authorization for a Payment or Savings account.
-
 ## The task at hand
 
 Implement the following business requirement
@@ -24,17 +7,69 @@ Implement the following business requirement
 - Users must be able to create write or read access for payments and savings accounts
 - Users need to be able to retrieve a list of accounts they have read or write access for
 
-Boundaries
+## Details and Assumptions for implementation:
 
-- You can add dependencies as you like
-- You can design the data and API models as you like (what a dream, isn't it?)
 
-Notes
+The application is secured using an OAuth Bearer token (JWT), basic validation of the token is done using a stubbed JWKS store.
+It is assumed further validation of the JWT is performed by an API gateway.
 
-- The code should be ready to go to production on delivery
+#### Notes on implementation:
+* AccountNumber is globally unique accross all accoutns (IBAN)
+* Account type is irrelevant to POA grants but to demonstrate different accounts  have differing fields in the resulting responses
+* Added NONE as an auth type to preserve audit log and allow removal of Authorization
+* Account list ONLY includes accounts wit PoA, not accounts owned by self
+* PoA can only be granted by account holder, not someone with PoA on that account
 
-## Background information
+#### Limitations
+* Test coverage is not excellent: manual integration test UI provided instead
+* Code can be cleaned up in some places (replace new ?? with builders in places)
+* Mongo queries could be faster and fewer if native join queries on accounts are used
+* Did not provide a Dockerfile to create image
 
-A Power of Attorney is used when someone (grantor) wants to give access to his/her account to someone else (grantee). This
-could be read access or write access. In this way the grantee can read/write in the grantors account.
-Notice that this is a simplified version of reality.
+## Build
+
+Standard maven build and test
+``
+mvn clean package
+``
+
+You can also load the project in to IntelliJ IDEA, build and run tests there.
+
+## How to Test
+
+Swagger UI is available at: http://localhost:8080/docs/swagger-ui
+
+This assumes you have a JWKS service to validate your bearer token, this is stubbed within the app can be changed via application.yaml, standard spring config parameters.
+
+### Step 1: Authorization Tokens for granter and grantee
+
+* Copy the RSA private key contents from the repo `scripts/credentials/credentials.pem`
+  * *n.b. run create_rsa_keys.sh to make new ones, keys should not normally be in source control!*
+* Go to https://jwt.io/, change the Encryption type to RS256 and replace the PRIVATE KEY in the box with the one above.
+* Generate the GRANTER JWT: set the 'sub' claim to 'MrGranter' copy and paste the encoded JWT somewhere handy
+* Generate the GRANTEE JWT: set the 'sub' claim to 'MsGrantee' copy and paste the encoded JWT somewhere handy
+
+## Step 2: Create an account to grant Power of Attorney to
+
+* Use the account API endpoint to create an account for "MrGranter".
+* Go to http://localhost:8080/docs/swagger-ui
+* In "account-controller" use POST
+  * Set an accountNumber **REMEMBER THIS**
+  * Choose accountType 'savings' or 'payment'
+  * Paste in the GRANTER JWT as saved in Step 1
+
+Check it worked - use GET to list all accounts (use the same GRANTER JWT)
+
+## Step 3: Grant Power of Attorney to grantee
+
+* In swagger UI go to "power-of-attorney" POST
+* Post with GRANTER JWT, ACCONT NUMBER and grantee: "MsGrantee" in the Authroization type READ / WRITE (or NONE)
+
+## Step 4: Check Power of Attorney to grantee
+
+* In swagger UI go to "power-of-attorney" GET - Enter *GRANTEE JWT*.
+* Check the appropriate accounts is listed
+
+### Step 5: Repeat with other Accounts/Authorizations
+
+
