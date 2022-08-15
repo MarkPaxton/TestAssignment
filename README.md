@@ -31,11 +31,12 @@ It is assumed further validation of the JWT is performed by an API gateway, and 
 Standard maven build and test, run the api project:
 
 ``
-mvn clean package
+mvn clean install
 ``
 
 ``
 cd api
+
 mvn spring-boot:run
 ``
 
