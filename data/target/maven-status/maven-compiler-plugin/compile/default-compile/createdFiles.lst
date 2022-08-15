@@ -1,8 +1,0 @@
-nl\rabobank\mongo\repositories\SpringAccountRepository.class
-nl\rabobank\mongo\repositories\PowerOfAttorneyRepositoryImpl.class
-nl\rabobank\mongo\models\PowerOfAttorneyDocument.class
-nl\rabobank\mongo\models\AccountDocument.class
-nl\rabobank\mongo\repositories\AccountRepositoryImpl.class
-nl\rabobank\mongo\ReactiveMongoConfig.class
-nl\rabobank\mongo\repositories\SpringPowerOfAttorneyRepository.class
-nl\rabobank\mongo\MongoConfiguration.class
