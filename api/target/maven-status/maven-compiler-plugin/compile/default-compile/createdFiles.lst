@@ -1,6 +1,12 @@
-nl\rabobank\security\SecurityConfiguration.class
-nl\rabobank\controllers\ApiController.class
-nl\rabobank\RaboAssignmentApplication.class
-nl\rabobank\services\AccountAccessService.class
-nl\rabobank\SwaggerConfiguration.class
+nl\rabobank\dto\AccountListDTO$AccountListDTOBuilder.class
+nl\rabobank\controllers\PowerOfAttorneyController.class
+nl\rabobank\dto\PowerOfAttorneyAuthorizationDTO$PowerOfAttorneyAuthorizationDTOBuilder.class
+nl\rabobank\controllers\AccountController.class
+nl\rabobank\services\DebugAccountService.class
 nl\rabobank\WebConfig.class
+nl\rabobank\dto\PowerOfAttorneyAuthorizationDTO.class
+nl\rabobank\security\SecurityConfiguration.class
+nl\rabobank\dto\AccountListDTO.class
+nl\rabobank\RaboAssignmentApplication.class
+nl\rabobank\services\PowerOfAttorneyServiceImpl.class
+nl\rabobank\SwaggerConfiguration.class

@@ -17,7 +17,7 @@ class AccountRepositoryImplTest {
 
     @Test
     void AccountRepository_Save_And_Find_Ok() {
-        var original = new TestAccount();
+        var original = TestAccount.builder().build();
         var testSaved = accountRepository.save(original);
 
         StepVerifier.create(testSaved)
@@ -33,14 +33,14 @@ class AccountRepositoryImplTest {
 
     @Test
     void AccountRepository_Save_And_Find_None() {
-        var original = new TestAccount();
+        var original = TestAccount.builder().build();
         var testSaved = accountRepository.save(original);
 
         StepVerifier.create(testSaved)
                     .expectNextMatches(saved -> original.compareTo(saved) == 0)
                     .expectComplete().verify();
 
-        var testFound = accountRepository.findAllByAccountHolderName(original.getAccountHolderName()+"XXX");
+        var testFound = accountRepository.findAllByAccountHolderName(original.getAccountHolderName() + "XXX");
 
         StepVerifier.create(testFound)
                     .expectNextCount(0)
@@ -49,7 +49,7 @@ class AccountRepositoryImplTest {
 
     @Test
     void AccountRepository_Save_And_FindByAccountNumber_Ok() {
-        var original = new TestAccount();
+        var original = TestAccount.builder().build();
         var testSaved = accountRepository.save(original);
 
         StepVerifier.create(testSaved)
@@ -65,7 +65,7 @@ class AccountRepositoryImplTest {
 
     @Test
     void AccountRepository_Save_And_FindByAccountNumber_None() {
-        var original = new TestAccount();
+        var original = TestAccount.builder().build();
         var testSaved = accountRepository.save(original);
 
         StepVerifier.create(testSaved)
@@ -78,5 +78,4 @@ class AccountRepositoryImplTest {
                     .expectNextCount(0)
                     .expectComplete().verify();
     }
-
 }

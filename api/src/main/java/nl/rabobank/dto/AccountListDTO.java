@@ -1,15 +1,17 @@
 package nl.rabobank.dto;
 
-import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import nl.rabobank.account.Account;
 import nl.rabobank.authorizations.Authorization;
 
+/**
+ * DTO Object to allow the AccountList response to be a well formatted JSON Object
+ */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Builder
 public class AccountListDTO {
     Authorization authorization;
     Account account;
+    String accountType;
 }

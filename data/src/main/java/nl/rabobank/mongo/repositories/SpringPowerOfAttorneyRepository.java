@@ -11,7 +11,7 @@ import reactor.core.publisher.Mono;
 public interface SpringPowerOfAttorneyRepository extends ReactiveMongoRepository<PowerOfAttorneyDocument, String> {
     Flux<PowerOfAttorneyDocument> findAllByGranteeName(String granteeName);
 
-    Flux<PowerOfAttorneyDocument> findAllByGranteeNameAndAccountAccountNumber(String granteeName, String accountNumber);
+    Flux<PowerOfAttorneyDocument> findAllByGranteeNameAndAccountDocumentId(String granteeName, String accoutnDocumentId);
 
     Mono<PowerOfAttorneyDocument> save(PowerOfAttorneyDocument powerOfAttorneyDocument);
 }

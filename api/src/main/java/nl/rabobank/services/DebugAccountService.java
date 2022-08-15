@@ -9,6 +9,7 @@ import nl.rabobank.account.Account;
 import nl.rabobank.account.PaymentAccount;
 import nl.rabobank.account.SavingsAccount;
 import nl.rabobank.repositories.AccountRepository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -19,6 +20,10 @@ public class DebugAccountService {
 
     public DebugAccountService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
+    }
+
+    public Flux<Account> findAll() {
+        return accountRepository.findAll();
     }
 
     public Mono<Account> createAccount(String accountHolderName, String accountNumber, String type) {

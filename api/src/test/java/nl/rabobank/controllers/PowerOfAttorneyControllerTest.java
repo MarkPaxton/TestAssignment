@@ -19,7 +19,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import lombok.extern.slf4j.Slf4j;
 import nl.rabobank.account.Account;
 import nl.rabobank.authorizations.Authorization;
-import nl.rabobank.dto.PowerOfAttorneyAuthorizationDto;
+import nl.rabobank.dto.PowerOfAttorneyAuthorizationDTO;
 import nl.rabobank.exceptions.NoAccountException;
 import nl.rabobank.services.PowerOfAttorneyService;
 import reactor.core.publisher.Flux;
@@ -52,9 +52,9 @@ class PowerOfAttorneyControllerTest {
 
     @BeforeEach
     public void setup() {
-        testAccountsList = List.of(Tuples.of(new TestAccount(), Authorization.READ),
-                        Tuples.of(new TestAccount(), Authorization.WRITE),
-                        Tuples.of(new TestAccount(), Authorization.READ)
+        testAccountsList = List.of(Tuples.of(TestAccount.builder().build(), Authorization.READ),
+                        Tuples.of(TestAccount.builder().build(), Authorization.WRITE),
+                        Tuples.of(TestAccount.builder().build(), Authorization.READ)
         );
     }
 
@@ -64,34 +64,34 @@ class PowerOfAttorneyControllerTest {
 
     @Test
     void getAllAccounts_Empty() {
-        when(powerOfAttorneyService.getAllAccounts("sub")).thenReturn(Flux.fromIterable(List.of()));
+        when(powerOfAttorneyService.getAllAccountsForName("sub")).thenReturn(Flux.fromIterable(List.of()));
         webTestClientWithSubject("sub")
                         .get().uri("/powerofattorney").exchange()
                         .expectStatus().isOk()
                         .expectBody().jsonPath("$").isArray()
                         .jsonPath("$.length()").isEqualTo(0);
-        verify(powerOfAttorneyService, times(1)).getAllAccounts("sub");
+        verify(powerOfAttorneyService, times(1)).getAllAccountsForName("sub");
     }
 
     @Test
     void getAllAccounts_List() {
-        when(powerOfAttorneyService.getAllAccounts("test")).thenReturn(Flux.fromIterable(testAccountsList));
+        when(powerOfAttorneyService.getAllAccountsForName("test")).thenReturn(Flux.fromIterable(testAccountsList));
         webTestClientWithSubject("test")
                         .get().uri("/powerofattorney").exchange()
                         .expectStatus().isOk()
                         .expectBody().jsonPath("$").isArray()
                         .jsonPath("$.length()").isEqualTo(3);
-        verify(powerOfAttorneyService, times(1)).getAllAccounts("test");
+        verify(powerOfAttorneyService, times(1)).getAllAccountsForName("test");
 
     }
 
     @Test
     void getAllAccounts_Exception() {
-        when(powerOfAttorneyService.getAllAccounts("user")).thenReturn(Flux.error(new RuntimeException()));
+        when(powerOfAttorneyService.getAllAccountsForName("user")).thenReturn(Flux.error(new RuntimeException()));
         webTestClientWithSubject("user")
                         .get().uri("/powerofattorney").exchange()
                         .expectStatus().is5xxServerError();
-        verify(powerOfAttorneyService, times(1)).getAllAccounts("user");
+        verify(powerOfAttorneyService, times(1)).getAllAccountsForName("user");
     }
 
     @Test
@@ -100,7 +100,10 @@ class PowerOfAttorneyControllerTest {
         webTestClientWithSubject("sub")
                         .post().uri("/powerofattorney")
                         //.contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(new PowerOfAttorneyAuthorizationDto("testAccNumber", "testOtherUser", Authorization.READ)))
+                        .body(BodyInserters.fromValue(PowerOfAttorneyAuthorizationDTO
+                                        .builder().accountNumber("testAccNumber")
+                                        .grantTo("testOtherUser")
+                                        .authorization(Authorization.READ).build()))
                         .exchange()
                         .expectStatus().isOk()
                         .expectBody().isEmpty();
@@ -114,7 +117,9 @@ class PowerOfAttorneyControllerTest {
         webTestClientWithSubject("sub")
                         .post().uri("/powerofattorney")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(new PowerOfAttorneyAuthorizationDto("testAccNumber", "testOtherUser", Authorization.READ)))
+                        .body(BodyInserters.fromValue(PowerOfAttorneyAuthorizationDTO.builder()
+                                                                                     .accountNumber("testAccNumber").grantTo("testOtherUser")
+                                                                                     .authorization(Authorization.READ).build()))
                         .exchange()
                         .expectStatus().isBadRequest();
         verify(powerOfAttorneyService, times(1)).setAuthorization("sub", "testAccNumber", "testOtherUser", Authorization.READ);
@@ -127,7 +132,9 @@ class PowerOfAttorneyControllerTest {
         webTestClientWithSubject("sub")
                         .post().uri("/powerofattorney")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(new PowerOfAttorneyAuthorizationDto("testAccNumber", "testOtherUser", Authorization.READ)))
+                        .body(BodyInserters.fromValue(PowerOfAttorneyAuthorizationDTO.builder()
+                                                                                     .accountNumber("testAccNumber").grantTo("testOtherUser")
+                                                                                     .authorization(Authorization.READ).build()))
                         .exchange()
                         .expectStatus().is5xxServerError();
         verify(powerOfAttorneyService, times(1)).setAuthorization("sub", "testAccNumber", "testOtherUser", Authorization.READ);

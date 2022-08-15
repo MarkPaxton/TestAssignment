@@ -10,13 +10,6 @@
     <artifactId>rabobank-assignment-data</artifactId>
 
     <dependencies>
-        <!-- Add your dependencies here! -->
-        <dependency>
-            <groupId>nl.rabobank</groupId>
-            <artifactId>rabobank-assignment-data</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <!-- Mongo -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

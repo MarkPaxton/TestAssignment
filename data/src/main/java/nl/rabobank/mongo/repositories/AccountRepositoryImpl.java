@@ -32,12 +32,17 @@ public class AccountRepositoryImpl implements AccountRepository {
 
     @Override
     public Mono<Account> findByAccountNumber(String accountNumber) {
-        return springAccountRepository.findAllByAccountNumber(accountNumber).map(AccountDocument::getAccount).singleOrEmpty();
+        return springAccountRepository.findAllByAccount_AccountNumber(accountNumber).map(AccountDocument::getAccount).singleOrEmpty();
     }
 
     @Override
     public Mono<Account> findAllByAccountHolderNameAndAccountNumber(String accountHolderName, String accountNumber) {
-        return springAccountRepository.findAllByAccount_AccountHolderNameAndAccountNumber(accountHolderName, accountNumber)
+        return springAccountRepository.findAllByAccount_AccountHolderNameAndAccount_AccountNumber(accountHolderName, accountNumber)
                                       .map(AccountDocument::getAccount).singleOrEmpty();
+    }
+
+    @Override
+    public Flux<Account> findAll() {
+        return springAccountRepository.findAll().map(AccountDocument::getAccount);
     }
 }

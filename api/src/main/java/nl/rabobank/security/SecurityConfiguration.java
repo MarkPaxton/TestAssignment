@@ -16,13 +16,11 @@ public class SecurityConfiguration {
     SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
         http
                         .csrf().disable()
-                        .authorizeExchange((authorize) -> authorize
-                                        .pathMatchers("/powerofattorney/**").authenticated()
-                                        .pathMatchers("/**").permitAll()
-                        )
-                        .oauth2ResourceServer((resourceServer) -> resourceServer
-                                        .jwt(withDefaults())
-                        );
+                        .authorizeExchange(authorize -> authorize
+                                        .pathMatchers("/powerofattorney/**", "/account/**")
+                                        .authenticated()
+                                        .pathMatchers("/**").permitAll())
+                        .oauth2ResourceServer(resourceServer -> resourceServer.jwt(withDefaults()));
         return http.build();
     }
 

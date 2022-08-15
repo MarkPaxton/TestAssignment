@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import nl.rabobank.authorizations.Authorization;
 import nl.rabobank.authorizations.PowerOfAttorney;
-import nl.rabobank.authorizations.PowerOfAttorneyImpl;
 import nl.rabobank.exceptions.NoAccountException;
 import nl.rabobank.models.TestAccount;
 import nl.rabobank.repositories.AccountRepository;
@@ -34,28 +33,28 @@ class PowerOfAttorneyServiceTest {
 
     PowerOfAttorneyRepository powerOfAttorneyAuthorisationRepository;
 
-    Map<String, TestAccount> testAccounts = Map.of("1", new TestAccount(),
-                    "2", new TestAccount(),
-                    "3", new TestAccount(),
-                    "4", new TestAccount(),
-                    "5", new TestAccount());
+    Map<String, TestAccount> testAccounts = Map.of("1", TestAccount.builder().accountNumber("1").build(),
+                    "2", TestAccount.builder().accountNumber("2").build(),
+                    "3", TestAccount.builder().accountNumber("3").build(),
+                    "4", TestAccount.builder().accountNumber("4").build(),
+                    "5", TestAccount.builder().accountNumber("5").build());
 
     List<PowerOfAttorney> testPowers = List.of(
-                    PowerOfAttorneyImpl.builder().granteeName("grant").grantorName(testAccounts.get("1").getAccountHolderName())
-                                       .account(testAccounts.get("1"))
-                                       .authorization(Authorization.READ).build(),
-                    PowerOfAttorneyImpl.builder().granteeName("grant").grantorName(testAccounts.get("2").getAccountHolderName())
-                                       .account(testAccounts.get("2"))
-                                       .authorization(Authorization.WRITE).build(),
-                    PowerOfAttorneyImpl.builder().granteeName("grant").grantorName(testAccounts.get("3").getAccountHolderName())
-                                       .account(testAccounts.get("3"))
-                                       .authorization(Authorization.READ).build(),
-                    PowerOfAttorneyImpl.builder().granteeName("grant").grantorName(testAccounts.get("4").getAccountHolderName())
-                                       .account(testAccounts.get("4"))
-                                       .authorization(Authorization.WRITE).build(),
-                    PowerOfAttorneyImpl.builder().granteeName("grant").grantorName(testAccounts.get("5").getAccountHolderName())
-                                       .account(testAccounts.get("5"))
-                                       .authorization(Authorization.WRITE).build()
+                    PowerOfAttorney.builder().granteeName("grant").grantorName(testAccounts.get("1").getAccountHolderName())
+                                   .account(testAccounts.get("1"))
+                                   .authorization(Authorization.READ).build(),
+                    PowerOfAttorney.builder().granteeName("grant").grantorName(testAccounts.get("2").getAccountHolderName())
+                                   .account(testAccounts.get("2"))
+                                   .authorization(Authorization.WRITE).build(),
+                    PowerOfAttorney.builder().granteeName("grant").grantorName(testAccounts.get("3").getAccountHolderName())
+                                   .account(testAccounts.get("3"))
+                                   .authorization(Authorization.READ).build(),
+                    PowerOfAttorney.builder().granteeName("grant").grantorName(testAccounts.get("4").getAccountHolderName())
+                                   .account(testAccounts.get("4"))
+                                   .authorization(Authorization.WRITE).build(),
+                    PowerOfAttorney.builder().granteeName("grant").grantorName(testAccounts.get("5").getAccountHolderName())
+                                   .account(testAccounts.get("5"))
+                                   .authorization(Authorization.WRITE).build()
     );
 
     @BeforeEach
@@ -72,7 +71,7 @@ class PowerOfAttorneyServiceTest {
         doReturn(Flux.empty()).when(powerOfAttorneyAuthorisationRepository).findAllByGranteeName("testUser");
         var powerOfAttorneyService = new TestPowerOfAttorneyService(accountRepository, powerOfAttorneyAuthorisationRepository);
 
-        var results = powerOfAttorneyService.getAllAccounts("testUser");
+        var results = powerOfAttorneyService.getAllAccountsForName("testUser");
 
         StepVerifier.create(results)
                     .expectSubscription().expectNextCount(0)
@@ -90,7 +89,7 @@ class PowerOfAttorneyServiceTest {
         doReturn(Flux.fromIterable(testPowers)).when(powerOfAttorneyAuthorisationRepository).findAllByGranteeName("testUser");
         var powerOfAttorneyService = new TestPowerOfAttorneyService(accountRepository, powerOfAttorneyAuthorisationRepository);
 
-        var results = powerOfAttorneyService.getAllAccounts("testUser");
+        var results = powerOfAttorneyService.getAllAccountsForName("testUser");
         StepVerifier.create(results)
                     .expectNextCount(5)
                     .expectComplete()
@@ -138,7 +137,7 @@ class PowerOfAttorneyServiceTest {
         verify(powerOfAttorneyAuthorisationRepository, times(1)).findAllByGranteeNameAndAccountNumber(testExistingPower.getGranteeName(),
                         testAccount.getAccountNumber());
         verify(accountRepository, never()).findAllByAccountHolderNameAndAccountNumber(anyString(), anyString());
-        verify(powerOfAttorneyAuthorisationRepository, never()).save(any(PowerOfAttorneyImpl.class));
+        verify(powerOfAttorneyAuthorisationRepository, never()).save(any(PowerOfAttorney.class));
     }
 
     /**
@@ -151,7 +150,7 @@ class PowerOfAttorneyServiceTest {
                               .findAllByGranteeNameAndAccountNumber("jane", testAccount.getAccountNumber());
         doReturn(Mono.just(testAccount)).when(accountRepository)
                                         .findAllByAccountHolderNameAndAccountNumber(testAccount.getAccountHolderName(), testAccount.getAccountNumber());
-        doAnswer(a -> Mono.just(a.getArgument(0))).when(powerOfAttorneyAuthorisationRepository).save(any(PowerOfAttorneyImpl.class));
+        doAnswer(a -> Mono.just(a.getArgument(0))).when(powerOfAttorneyAuthorisationRepository).save(any(PowerOfAttorney.class));
 
         var powerOfAttorneyService = new TestPowerOfAttorneyService(accountRepository, powerOfAttorneyAuthorisationRepository);
         var results = powerOfAttorneyService.setAuthorization(testAccount.getAccountHolderName(), testAccount.getAccountNumber(), "jane",
@@ -186,7 +185,7 @@ class PowerOfAttorneyServiceTest {
         doReturn(Mono.just(testAccount)).when(accountRepository)
                                         .findAllByAccountHolderNameAndAccountNumber(eq(testAccount.getAccountHolderName()),
                                                         eq(testAccount.getAccountNumber()));
-        doAnswer(a -> Mono.just(a.getArgument(0))).when(powerOfAttorneyAuthorisationRepository).save(any(PowerOfAttorneyImpl.class));
+        doAnswer(a -> Mono.just(a.getArgument(0))).when(powerOfAttorneyAuthorisationRepository).save(any(PowerOfAttorney.class));
 
         var powerOfAttorneyService = new TestPowerOfAttorneyService(accountRepository, powerOfAttorneyAuthorisationRepository);
 
