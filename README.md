@@ -11,10 +11,10 @@ Implement the following business requirement
 
 
 The application is secured using an OAuth Bearer token (JWT), basic validation of the token is done using a stubbed JWKS store.
-It is assumed further validation of the JWT is performed by an API gateway.
+It is assumed further validation of the JWT is performed by an API gateway, and a real JWKS store can be configured in application.yaml.
 
 #### Notes on implementation:
-* AccountNumber is globally unique accross all accoutns (IBAN)
+* AccountNumber is globally unique across all accounts (IBAN)
 * Account type is irrelevant to POA grants but to demonstrate different accounts  have differing fields in the resulting responses
 * Added NONE as an auth type to preserve audit log and allow removal of Authorization
 * Account list ONLY includes accounts wit PoA, not accounts owned by self
@@ -31,13 +31,12 @@ It is assumed further validation of the JWT is performed by an API gateway.
 Standard maven build and test, run the api project:
 
 ``
-mvn clean package
+mvn clean install
 ``
 
-``
-cd api
-mvn spring-boot:run
-``
+``cd api``
+
+``mvn spring-boot:run``
 
 You can also load the project in to IntelliJ IDEA, build and run tests there.
 
