@@ -11,7 +11,7 @@ Implement the following business requirement
 
 
 The application is secured using an OAuth Bearer token (JWT), basic validation of the token is done using a stubbed JWKS store.
-It is assumed further validation of the JWT is performed by an API gateway.
+It is assumed further validation of the JWT is performed by an API gateway, and a real JWKS store can be configured in application.yaml.
 
 #### Notes on implementation:
 * AccountNumber is globally unique accross all accoutns (IBAN)
