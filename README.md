@@ -44,8 +44,6 @@ You can also load the project in to IntelliJ IDEA, build and run tests there.
 
 Swagger UI is available at: http://localhost:8080/docs/swagger-ui
 
-This assumes you have a JWKS service to validate your bearer token, this is stubbed within the app can be changed via application.yaml, standard spring config parameters.
-
 ### Step 1: Authorization Tokens for granter and grantee
 
 * Copy the RSA private key contents from the repo `scripts/credentials/credentials.pem`
