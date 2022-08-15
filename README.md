@@ -46,7 +46,7 @@ Swagger UI is available at: http://localhost:8080/docs/swagger-ui
 
 ### Step 1: Authorization Tokens for granter and grantee
 
-* Copy the RSA private key contents from the repo `scripts/credentials/credentials.pem`
+* Copy the RSA private key contents from the repo `scripts/credentials/private-key-pkcs8.pem`
   * *n.b. run create_rsa_keys.sh to make new ones, keys should not normally be in source control!*
 * Go to https://jwt.io/, change the Encryption type to RS256 and replace the PRIVATE KEY in the box with the one above.
 * Generate the GRANTER JWT: set the 'sub' claim to 'MrGranter' copy and paste the encoded JWT somewhere handy
