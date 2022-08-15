@@ -28,9 +28,15 @@ It is assumed further validation of the JWT is performed by an API gateway.
 
 ## Build
 
-Standard maven build and test
+Standard maven build and test, run the api project:
+
 ``
 mvn clean package
+``
+
+``
+cd api
+mvn spring-boot:run
 ``
 
 You can also load the project in to IntelliJ IDEA, build and run tests there.
@@ -63,7 +69,7 @@ Check it worked - use GET to list all accounts (use the same GRANTER JWT)
 ## Step 3: Grant Power of Attorney to grantee
 
 * In swagger UI go to "power-of-attorney" POST
-* Post with GRANTER JWT, ACCONT NUMBER and grantee: "MsGrantee" in the Authroization type READ / WRITE (or NONE)
+* Post with GRANTER JWT, ACCONT NUMBER and grantTo: "MsGrantee" in the Authroization type READ / WRITE (or NONE)
 
 ## Step 4: Check Power of Attorney to grantee
 

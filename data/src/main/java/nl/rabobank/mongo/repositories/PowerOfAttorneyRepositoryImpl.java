@@ -27,11 +27,11 @@ public class PowerOfAttorneyRepositoryImpl implements PowerOfAttorneyRepository 
     @Override
     public Flux<PowerOfAttorney> findAllByGranteeName(String granteeName) {
         return springPowerOfAttorneyRepository.findAllByGranteeName(granteeName)
-                                              // .groupBy(PowerOfAttorneyDocument::getAccount)
+                                               .groupBy(PowerOfAttorneyDocument::getAccountDocumentId)
                                               // For each account, keep only the newest grant
-                                              // .flatMap(group -> group.reduce((o1, o2) -> o1.getCreated().compareTo(o2.getCreated()) > 0 ? o1 : o2))
+                                              .flatMap(group -> group.reduce((o1, o2) -> o1.getCreated().compareTo(o2.getCreated()) > 0 ? o1 : o2))
                                               // Exclude the NONE grant as is a placeholder to cancel any previous READ/WRITE grants only to maintain audit trail
-                                              //  .filter(d -> d.getAuthorization() != Authorization.NONE)
+                                              .filter(d -> d.getAuthorization() != Authorization.NONE)
                                               .flatMap(d -> springAccountRepository.findById(d.getAccountDocumentId())
                                                                                    .map(account -> PowerOfAttorney.builder()
                                                                                                                   .granteeName(d.getGranteeName())

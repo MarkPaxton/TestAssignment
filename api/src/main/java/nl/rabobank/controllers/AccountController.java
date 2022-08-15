@@ -43,7 +43,7 @@ public class AccountController {
 
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer {access_token}")
-    @ApiOperation("List all accounts")
+    @ApiOperation("Create an account")
     public Mono<ResponseEntity<Account>> createAccount(@ApiIgnore @AuthenticationPrincipal Jwt jwt, @ApiParam(value = "Account number", example = "123456", defaultValue = "123456") @RequestParam String accountNumber,
                  @ApiParam(value = "Account type: payment | savings", defaultValue = "payment")   @RequestParam String accountType) {
         log.info("createAccount user# {} / {} / {}", jwt.getSubject().hashCode(), accountNumber, accountType);
@@ -53,7 +53,7 @@ public class AccountController {
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    @ApiOperation(value = "Create an account", notes = "AccountHolderName is populated by the Authorization header JWT sub (subject) claim")
+    @ApiOperation(value = "List accounts", notes = "AccountHolderName is populated by the Authorization header JWT sub (subject) claim")
     @ApiImplicitParam(name = "Authorization", value = "Access Token", required = true, paramType = "header", dataTypeClass = String.class, example = "Bearer {access_token}")
     public Flux<Account> listAccounts(@ApiIgnore @AuthenticationPrincipal Jwt jwt) {
         return debugAccountService.findAll();
